@@ -42,7 +42,7 @@ func main() {
 	master_password := os.Args[1]
 	
 	// Open DB
-	db, err := sql.Open("sqlite3", "./ld37-server.sqlite")
+	db, err := sql.Open("sqlite3", "analytics.sqlite")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -47,10 +47,20 @@ richText.y = 10;
 stage.addChild(richText);
 
 let clickCount = 0;
+let frames = 0;
 
 function onDown (eventData) {
 	clickCount = clickCount + 1;
+	
+	console.log (JSON.stringify ({
+		clickCount: clickCount,
+		frames: frames,
+		pseudoCookie: pseudoCookie,
+		date: Date.now ()
+	}));
 }
+
+let pseudoCookie = Math.floor (Math.random () * 1024 * 1024 * 1024);
 
 // start animating
 animate();
@@ -63,12 +73,13 @@ function animate() {
 	renderer.resize (width, height);
 	
 	// just for fun, let's rotate ms rabbit a little
-	bunny.rotation += 0.005;
+	bunny.rotation = frames * 0.005;
+	frames = frames + 1;
 	
 	bunny.position.x = width * 0.5;
 	bunny.position.y = height * 0.5;
 	
-	richText.text = "Click Lenna to send me analytics data! You have clicked " + clickCount + " times!";
+	richText.text = "Click Lenna to send me data! You have clicked " + clickCount + " times!";
 	
 	// render the container
 	renderer.render(stage);
