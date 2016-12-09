@@ -93,11 +93,6 @@ func main() {
 		}
 	})
 	
-	db.Exec("create table if not exists Passwords (nick string unique, password string);")
-	db.Exec("create table if not exists Suggestions (password string, author string, category string, suggestion string);")
-	db.Exec ("create index if not exists SuggestionsByPassword on Suggestions (password);")
-	
-	
 	db.Exec ("create table if not exists Events (ip string, timestamp int, json string);")
 	
 	// Start server
