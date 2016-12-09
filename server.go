@@ -54,34 +54,6 @@ func main() {
 		fmt.Fprintf(w, "User count: %d\n", count)
 	})
 	
-	http.HandleFunc("/set_password", func(w http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query()
-		
-		given_password := get_query_arg(query, "master_password")
-		if given_password != nil && *given_password == master_password {
-			password := get_query_arg(query, "password")
-			nick := get_query_arg(query, "nick")
-			
-			if nick == nil || password == nil || *nick == "" || *password == "" {
-				fmt.Fprintf(w, "500 Internal Server Error")
-				return
-			}
-			
-			stmt, _ := db.Prepare ("insert or replace into Passwords (nick, password) values (?, ?);")
-			
-			defer stmt.Close ()
-			stmt.Exec (nick, password)
-			
-			count := count_users (db)
-			
-			fmt.Fprintf (w, "Set password for '%v'\n", *nick)
-			fmt.Fprintf (w, "%d users total\n", count)
-		} else {
-			fmt.Fprintf(w, "500 Internal Server Error")
-			return
-		}
-	})
-	
 	http.HandleFunc("/submit_suggestion", func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 		
@@ -124,6 +96,9 @@ func main() {
 	db.Exec("create table if not exists Passwords (nick string unique, password string);")
 	db.Exec("create table if not exists Suggestions (password string, author string, category string, suggestion string);")
 	db.Exec ("create index if not exists SuggestionsByPassword on Suggestions (password);")
+	
+	
+	db.Exec ("create table if not exists Events (ip string, timestamp int, json string);")
 	
 	// Start server
 	log.Fatal(http.ListenAndServe(":8080", nil))
