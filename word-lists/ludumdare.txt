@@ -1,80 +1,209 @@
+1HGJ
+3D model
 ActionScript
+Advertisement
 Amazon
+AMD
 Android
+ANGLE
+Array
 ARM
+Audacity
+Authoritative server
+Automatic Updater
 AWS
+Backend
+BGM
+BitTorrent
+Black triangle
+Blackberry
 Blender 3D
+Box2D
 Braid
 Branch
+Bullet
+Caffeine
 C#
 C++
 CD Projekt
+Checksum
+Chromatic Aberration
 Clang
 Class
+Client-Server
 Cloudflare
 Cloudfront
+CMake
 Comment
 Commit
+Compiling
+Copyleft
+Cutscene
 CVS
 Cygwin
+Database
+Demo replay
+Demoscene
+Desktop Fullscreen
+Determinism
+Differential Equations
 DirectX
 DOOM
-Emscripten
 ECS
+Emacs
+Emscripten
+Enum
+Erlang
+Euler Angle
+Euler Integration
+Fisheye
 Fixed timestep
 Flash
+Free software
+Frontend
+Fullscreen
 Function
+FMV
+Game Design
+Game Developer
+Game Development
+Game Feel
+Gamepad
 GCC
 GIF
+GIMP
 Git
+GitHub
 Gitignore
+GitLab
+GLSL
 GNU/Linux
 GOG.com
+Google Chrome
+GPL
 Go (language)
 H.264
+Hack the Planet
+Hash
+Havok
 Haxe
 HTML5
 HTTP
 HTTPS
+IAP
+Inkscape
+Installer
+Intel
+IRC
 itch.io
 iOS
+IQM
 JavaScript
+Joystick
+JSON
+Juice
+Kiwi
+Let's Encrypt
 LibSDL
 Lua
 LuaJIT
 Ludum Dare
 MacOS
+Makefile
+Marketing
+Meta
+Microsoft Edge
 MinGW
 Minified
+MiniLD
+MMORPG
+MOBA
+Mozilla Firefox
+Native
+Nginx
+Nvidia
+October Challenge
 OpenGL
 Opus
 Package Manager
 PEBKAC
+Peer-to-peer
+Phaser
+Physics engine
+Pixel art
 Platformer
+Portable Application
+Pouet
+PRNG
+Proprietary
+ProcGen
+Prop
 Python
 Python3
+Quaternion
+Racing Game
+Ramen
+Ren'Py
+Reddit
+Rigid Body
+RK4
+RTS
 S3
+Safari
+Saturation
+Screenshake
+Sequencer
+Sfxr
+Shader
+Side-Scroller
 SIMD
 Source Code
 Source Engine
 Source Film Maker
 Shooter
+Speedrun
 Steam
 Subversion
+Super Meat Boy
+SQL
+SQLite
+Terrain
+TILED
 The Beginner's Guide
 The Stanley Parable
 The Witness
 Threading
+Tool-Assisted Speedrun
+Top-Down
+Torque
+Tracker
 Transport Layer Security
+Tutorial
+Twitter
 TypeScript
 Ubuntu
+UI / UX
 Unity
 Unreal
+UV
+Vector
+Vector Art
+Verlet Integration
 Version Control System
+Vertical Slice
+Vi
+Vignette
 Visual Studio
 Vorbis
 VPN
+VR
+Vulkan
+WaveFront OBJ
 WebAssembly
+WebGL
 WebM
 Windows
 Wolfenstein
+x86
+XML
+XYZ
