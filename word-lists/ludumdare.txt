@@ -79,6 +79,7 @@ Free software
 Frontend
 Fullscreen
 Function
+Functional Programming
 Game Design
 Game Developer
 Game Development
@@ -102,9 +103,11 @@ GUI
 H.264
 Hack the Planet
 Hash
+Haskell
 Havok
 Haxe
 HDR
+High Score
 Hitscan
 HTML5
 HTTP
@@ -124,6 +127,7 @@ JSON
 Juice
 Kiwi
 Lag Compensation
+Lazy Evaluation
 Let's Encrypt
 Let's Play
 LibSDL
@@ -176,12 +180,14 @@ Racing Wheel
 Ramen
 Random Encounter
 Reddit
+Referential Transparency
 Ren'Py
 Rigid Body
 RK4
 Roguelike
 RPG
 RTS
+Rust
 S3
 Safari
 Saturation
@@ -203,6 +209,7 @@ Sprite
 Spritesheet
 SQL
 SQLite
+Static function
 Static linking
 Steam
 Subversion
@@ -219,6 +226,7 @@ TILED
 Tool-Assisted Speedrun
 Top-Down
 Torque
+Touchscreen
 Tracker
 Transport Layer Security
 Tutorial
