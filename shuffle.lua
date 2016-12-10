@@ -1,6 +1,6 @@
 local source = {}
 
-local count = 5
+local count = 10
 
 for i = 1, count do
 	table.insert (source, i)

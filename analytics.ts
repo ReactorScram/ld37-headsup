@@ -87,10 +87,14 @@ class Context {
 	style: any;
 	wordList: Array <string>;
 	
+	// Must stay sorted for the algo to be efficient
+	usedWordList: Array <number>;
+	
 	constructor (public Pixi: any, public pseudoCookie: number) {
 		this.clickCount = 0;
 		this.frames = 0;
 		this.prns_output = "Click It!"; //Prns.debug (this.clickCount);
+		this.usedWordList = [];
 	}
 }
 
@@ -203,13 +207,47 @@ function isLoaded (ctx: Context): boolean {
 	return ctx.wordList != null && ctx.wordList.length > 0;
 }
 
+function insertSorted (list: Array <number>, value: number): void {
+	list.push (value);
+	// Thanks w3Schools
+	// Pretend this is a really efficient insertion sort if anyone asks
+	list.sort(function(a, b){return a-b});
+}
+
+function pickWord (ctx: Context): number {
+	//let length = Prns.fromNum (ctx.wordList.length);
+	
+	let wordListLength = 5; // ctx.wordList.length;
+	
+	if (ctx.usedWordList.length == wordListLength) {
+		// Ran out of words, re-shuffle
+		// This should not happen in a typical 60-second game
+		ctx.usedWordList = [];
+	}
+	
+	let length = Prns.fromNum (wordListLength - ctx.usedWordList.length);
+	
+	let i = Prns.at (Prns.fromNum (ctx.clickCount)).modulo (length).getLowBitsUnsigned ();
+	
+	ctx.usedWordList.forEach (function (strike) {
+		if (i >= strike) {
+			i = i + 1;
+		}
+		else {
+			// Pass - idk if forEach has a 'break'
+		}
+	});
+	
+	insertSorted (ctx.usedWordList, i);
+	
+	return i;
+}
+
 function onDown (ctx: Context, eventData): void {
 	ctx.clickCount = ctx.clickCount + 1;
 	
 	if (isLoaded (ctx)) {
-		//let length = Prns.fromNum (ctx.wordList.length);
-		let length = Prns.fromNum (3);
-		ctx.prns_output = ctx.wordList [Prns.at (Prns.fromNum (ctx.clickCount)).modulo (length).getLowBitsUnsigned ()];
+		ctx.prns_output = ctx.wordList [pickWord (ctx)];
 	}
 	else {
 		ctx.prns_output = "Loading words...";
