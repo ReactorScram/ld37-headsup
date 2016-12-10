@@ -117,23 +117,23 @@ function load (PIXI) {
 	
 	ctx.renderer = PIXI.autoDetectRenderer(1280, 720,{backgroundColor : 0x1099bb});
 	document.body.appendChild(ctx.renderer.view);
-
+	
 	// create the root of the scene graph
 	ctx.stage = new PIXI.Container();
-
+	
 	// create a texture from an image path
 	var texture = PIXI.Texture.fromImage('images/click-me.png');
-
+	
 	// create a new Sprite using the texture
 	let bunny = new PIXI.Sprite(texture);
-
+	
 	// center the sprite's anchor point
 	bunny.anchor.x = 0.5;
 	bunny.anchor.y = 0.5;
 	
 	bunny.scale.x = 0.5;
 	bunny.scale.y = 0.5;
-
+	
 	// move the sprite to the center of the screen
 	bunny.position.x = 400;
 	bunny.position.y = 240;
@@ -149,7 +149,7 @@ function load (PIXI) {
 	ctx.bunny = bunny;
 	
 	ctx.stage.addChild(ctx.bunny);
-
+	
 	ctx.style = {
 		fontFamily : 'Arial',
 		fontSize : '30px',
@@ -165,11 +165,11 @@ function load (PIXI) {
 		wordWrap : true,
 		wordWrapWidth : 340
 	};
-
+	
 	ctx.richText = new PIXI.Text('',ctx.style);
 	ctx.richText.x = 10;
 	ctx.richText.y = 10;
-
+	
 	ctx.stage.addChild(ctx.richText);
 	
 	animate (ctx);
@@ -207,7 +207,9 @@ function onDown (ctx: Context, eventData): void {
 	ctx.clickCount = ctx.clickCount + 1;
 	
 	if (isLoaded (ctx)) {
-	ctx.prns_output = ctx.wordList [Prns.at (Prns.fromNum (ctx.clickCount)).modulo (Prns.fromNum (ctx.wordList.length)).getLowBitsUnsigned ()];
+		//let length = Prns.fromNum (ctx.wordList.length);
+		let length = Prns.fromNum (3);
+		ctx.prns_output = ctx.wordList [Prns.at (Prns.fromNum (ctx.clickCount)).modulo (length).getLowBitsUnsigned ()];
 	}
 	else {
 		ctx.prns_output = "Loading words...";
