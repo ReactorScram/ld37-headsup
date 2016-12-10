@@ -6,25 +6,27 @@ Amazon
 AMD
 Android
 ANGLE
-Array
 ARM
+Array
 Audacity
 Authoritative server
 Automatic Updater
 AWS
 Backend
+Backup
 BGM
 BitTorrent
 Black triangle
 Blackberry
 Blender 3D
+Bloom
 Box2D
 Braid
 Branch
 Bullet
-Caffeine
 C#
 C++
+Caffeine
 CD Projekt
 Checksum
 Chromatic Aberration
@@ -47,8 +49,10 @@ Demoscene
 Desktop Fullscreen
 Determinism
 Differential Equations
+Diffuse lighting
 DirectX
 DOOM
+Dynamic mix
 ECS
 Emacs
 Emscripten
@@ -58,12 +62,13 @@ Euler Angle
 Euler Integration
 Fisheye
 Fixed timestep
+FLAC
 Flash
+FMV
 Free software
 Frontend
 Fullscreen
 Function
-FMV
 Game Design
 Game Developer
 Game Development
@@ -78,39 +83,47 @@ Gitignore
 GitLab
 GLSL
 GNU/Linux
+Go (language)
 GOG.com
 Google Chrome
 GPL
-Go (language)
+GPU
 H.264
 Hack the Planet
 Hash
 Havok
 Haxe
+HDR
+Hitscan
 HTML5
 HTTP
 HTTPS
+Hype
 IAP
 Inkscape
 Installer
 Intel
-IRC
-itch.io
 iOS
 IQM
+IRC
+itch.io
 JavaScript
 Joystick
 JSON
 Juice
 Kiwi
+Lag Compensation
 Let's Encrypt
+Let's Play
 LibSDL
+Loot
 Lua
 LuaJIT
 Ludum Dare
 MacOS
 Makefile
 Marketing
+Matrix
 Meta
 Microsoft Edge
 MinGW
@@ -119,34 +132,42 @@ MiniLD
 MMORPG
 MOBA
 Mozilla Firefox
+Mumble
 Native
+Networking
 Nginx
 Nvidia
 October Challenge
 OpenGL
 Opus
 Package Manager
+Physically-Based Rendering
 PEBKAC
 Peer-to-peer
 Phaser
 Physics engine
 Pixel art
 Platformer
+PNG
 Portable Application
 Pouet
 PRNG
-Proprietary
 ProcGen
 Prop
+Proprietary
 Python
 Python3
 Quaternion
 Racing Game
+Racing Wheel
 Ramen
-Ren'Py
+Random Encounter
 Reddit
+Ren'Py
 Rigid Body
 RK4
+Roguelike
+RPG
 RTS
 S3
 Safari
@@ -155,33 +176,41 @@ Screenshake
 Sequencer
 Sfxr
 Shader
+Shooter
 Side-Scroller
 SIMD
+Soundtrack
 Source Code
 Source Engine
 Source Film Maker
-Shooter
 Speedrun
+Sprite
+Spritesheet
+SQL
+SQLite
 Steam
 Subversion
 Super Meat Boy
-SQL
-SQLite
+TCP
 Terrain
-TILED
+Texture
+Texture Atlas
 The Beginner's Guide
 The Stanley Parable
 The Witness
 Threading
+TILED
 Tool-Assisted Speedrun
 Top-Down
 Torque
 Tracker
 Transport Layer Security
 Tutorial
+Twitch
 Twitter
 TypeScript
 Ubuntu
+UDP
 UI / UX
 Unity
 Unreal
@@ -192,8 +221,10 @@ Verlet Integration
 Version Control System
 Vertical Slice
 Vi
+Video Streaming
 Vignette
 Visual Studio
+VOIP
 Vorbis
 VPN
 VR
