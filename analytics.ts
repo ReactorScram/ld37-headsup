@@ -100,6 +100,9 @@ class Context {
 	check: PixiSprite;
 	refresh: PixiSprite;
 	
+	clock: PixiSprite;
+	clockHand: PixiSprite;
+	
 	clickCount: number;
 	numCorrect: number;
 	frames: number;
@@ -219,6 +222,22 @@ function load (PIXI) {
 	ctx.stage.addChild (ctx.check);
 	ctx.stage.addChild (ctx.refresh);
 	
+	let clockTex = PIXI.Texture.fromImage ("images/clock.png");
+	let clock = new PIXI.Sprite (clockTex);
+	
+	clock.anchor.x = 0.5;
+	clock.anchor.y = 0.5;
+	ctx.stage.addChild (clock);
+	ctx.clock = clock;
+	
+	let clockHandTex = PIXI.Texture.fromImage ("images/clock-hand.png");
+	let clockHand = new PIXI.Sprite (clockHandTex);
+	
+	clockHand.anchor.x = 0.5;
+	clockHand.anchor.y = 0.5;
+	ctx.stage.addChild (clockHand);
+	ctx.clockHand = clockHand;
+	
 	ctx.style = {
 		fontFamily : 'Arial',
 		fontSize : '30px',
@@ -243,7 +262,7 @@ function load (PIXI) {
 	
 	ctx.basisJiggle = getTargetBasis (ctx.renderer.view);
 	
-	animate (ctx);
+	startAnimating (ctx);
 	
 	loadWordList (ctx);
 }
@@ -397,13 +416,13 @@ function getTargetBasis (view: any): number {
 }
 
 function startAnimating (ctx: Context) {
-	requestAnimationFrame(function () {
-		animate (ctx);
+	requestAnimationFrame(function (timestamp) {
+		animate (ctx, timestamp);
 	});
 }
 
-function animate (ctx: Context) {
-	let anythingChanged = ctx.checkmarkJiggle > 0.0 || ctx.refreshJiggle > 0.0 || ctx.loadJiggle > 0.0 || ctx.basisJiggle > 0.0;
+function animate (ctx: Context, timestamp) {
+	//let anythingChanged = ctx.checkmarkJiggle > 0.0 || ctx.refreshJiggle > 0.0 || ctx.loadJiggle > 0.0 || ctx.basisJiggle > 0.0;
 	
 	startAnimating (ctx);
 	
@@ -439,8 +458,29 @@ function animate (ctx: Context) {
 	
 	let tweenedBasis = Math.PI * 0.5 * refreshRotTween (ctx.basisJiggle);
 	
-	let basisX = Math.cos (tweenedBasis);
-	let basisY = Math.sin (tweenedBasis);
+	let basis = {
+		x: Math.cos (tweenedBasis),
+		y: Math.sin (tweenedBasis),
+	};
+	
+	let basis2 = {
+		x: basis.y,
+		y: -basis.x,
+	};
+	
+	let center = {
+		x: width * 0.5, 
+		y: height * 0.5,
+	};
+	
+	// Hey reactor did you know that JS has matrix libs
+	// yes
+	function transform (pos) {
+		return {
+			x: center.x + pos.x * basis2.x + pos.y * basis.x,
+			y: center.y + pos.x * basis2.y + pos.y * basis.y,
+		};
+	}
 	
 	ctx.renderer.resize (width, height);
 	
@@ -454,13 +494,22 @@ function animate (ctx: Context) {
 		let checkT = checkTween (ctx.checkmarkJiggle);
 		//let refreshT = refreshTween (ctx.refreshJiggle);
 		
-		ctx.check.position.x = width * 0.5 + 100 * basisX;
-		ctx.check.position.y = height * (0.5 + loadT) + 50 * checkT + 100 * basisY;
+		let loadY = height * loadT;
+		
+		ctx.check.position = transform ({ x: 0.0, y: 100.0 });
+		ctx.check.position.x += 0.0;
+		ctx.check.position.y += loadY + 50 * checkT;
 		ctx.check.rotation = 0.2 * ctx.checkmarkJiggleDirection * checkT;
 		
-		ctx.refresh.position.x = width * 0.5 - 150 * basisX;
-		ctx.refresh.position.y = height * (0.5 + loadT) + 30 * refreshYTween (ctx.refreshJiggle) - 150 * basisY;
+		ctx.refresh.position = transform ({ x: -50.0, y: -150.0 });
+		ctx.refresh.position.x += 0.0;
+		ctx.refresh.position.y += loadY + 30 * refreshYTween (ctx.refreshJiggle);
 		ctx.refresh.rotation = -2.0 * Math.PI * refreshRotTween (ctx.refreshJiggle);
+		
+		ctx.clock.position = transform ({ x: 100.0, y: -150.0 });
+		
+		ctx.clockHand.position = ctx.clock.position;
+		ctx.clockHand.rotation = timestamp / (60.0 * 1000.0) * 2.0 * Math.PI;
 	}
 	else {
 		ctx.richText.text = "Loading...";
@@ -469,7 +518,5 @@ function animate (ctx: Context) {
 	ctx.frames = ctx.frames + 1;
 	
 	// render the container
-	if (anythingChanged) {
-		ctx.renderer.render(ctx.stage);
-	}
+	ctx.renderer.render(ctx.stage);
 }
