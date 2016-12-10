@@ -181,7 +181,8 @@ function load (PIXI) {
 	
 	ctx.refresh = refresh;
 	
-	ctx.stage.addChild(ctx.check);
+	ctx.stage.addChild (ctx.check);
+	ctx.stage.addChild (ctx.refresh);
 	
 	ctx.style = {
 		fontFamily : 'Arial',
@@ -333,6 +334,13 @@ function checkTween (t: number): number {
 	return t * t * Math.sin (12 * Math.PI * t);
 }
 
+function refreshTween (t: number): number {
+	if (t == 0.0) {
+		return 0.0;
+	}
+	return t - 0.25 * Math.sin (Math.PI * 2.0 * t);
+}
+
 function animate (ctx: Context) {
 	requestAnimationFrame(function () {
 		animate (ctx);
@@ -355,8 +363,8 @@ function animate (ctx: Context) {
 		ctx.richText.text = ctx.display + "\nScore: " + ctx.numCorrect;
 		
 		ctx.check.position.x = width * 0.5;
-		ctx.check.position.y = height * (0.5 + loadTween (ctx.loadJiggle)) + 50 * checkTween (ctx.checkmarkJiggle);
-		ctx.check.rotation = 0.1 * ctx.checkmarkJiggleDirection * checkTween (ctx.checkmarkJiggle);
+		ctx.check.position.y = height * (0.5 + loadTween (ctx.loadJiggle)); // + 50 * checkTween (ctx.checkmarkJiggle);
+		ctx.check.rotation = 2 * Math.PI * ctx.checkmarkJiggleDirection * refreshTween (ctx.checkmarkJiggle);
 	}
 	else {
 		ctx.richText.text = "Loading...";
