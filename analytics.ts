@@ -123,10 +123,10 @@ class Context {
 		
 		this.sounds = new Map ([
 			[ESound.Correct, new Howl ({
-				src: ['sounds/correct.webm']
+				src: ['sounds/correct.ogg', 'sounds/correct.webm']
 			})],
 			[ESound.Refresh, new Howl ({
-				src: ['sounds/refresh.webm']
+				src: ['sounds/refresh.ogg', 'sounds/refresh.webm']
 			})],
 		]);
 	}
