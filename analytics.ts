@@ -93,11 +93,14 @@ class Context {
 	// Must stay sorted for the algo to be efficient
 	usedWordList: Array <number>;
 	
+	targetBasisAngle: number;
+	
 	// Jiggle timers
 	checkmarkJiggle: number;
 	checkmarkJiggleDirection: number;
 	refreshJiggle: number;
 	loadJiggle: number;
+	basisJiggle: number;
 	
 	constructor (public Pixi: any, public pseudoCookie: number) {
 		this.clickCount = 0;
@@ -109,6 +112,7 @@ class Context {
 		this.numCorrect = 0;
 		this.loadJiggle = 1.0;
 		this.checkmarkJiggleDirection = 0.0;
+		this.basisJiggle = 0.0;
 	}
 }
 
@@ -351,16 +355,39 @@ function animate (ctx: Context) {
 		return jiggleClamp (t - animRate);
 	}
 	
+	function jiggleTowards (t: number, target: number): number {
+		if (t < target) {
+			t = t + animRate;
+			if (t > target) {
+				t = target;
+			}
+		}
+		else {
+			t = t - animRate;
+			if (t < target) {
+				t = target;
+			}
+		}
+		
+		return t;
+	}
+	
 	let width = ctx.renderer.view.offsetWidth;
 	let height = ctx.renderer.view.offsetHeight;
 	
-	let basisX = 1.0;
-	let basisY = 0.0;
-	
 	if (height > width) {
-		basisX = 0.0;
-		basisY = 1.0;
+		ctx.targetBasisAngle = 1.0;
 	}
+	else {
+		ctx.targetBasisAngle = 0.0;
+	}
+	
+	ctx.basisJiggle = jiggleTowards (ctx.basisJiggle, ctx.targetBasisAngle);
+	
+	let tweenedBasis = Math.PI * 0.5 * refreshRotTween (ctx.basisJiggle);
+	
+	let basisX = Math.cos (tweenedBasis);
+	let basisY = Math.sin (tweenedBasis);
 	
 	ctx.renderer.resize (width, height);
 	
