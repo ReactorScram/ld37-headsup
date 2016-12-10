@@ -1,25 +1,43 @@
 ActionScript
 Amazon
+Android
+ARM
 AWS
+Blender 3D
 Braid
+Branch
 C#
 C++
 CD Projekt
 Clang
 Class
+Cloudflare
+Cloudfront
 Comment
+Commit
+CVS
 Cygwin
 DirectX
 DOOM
 Emscripten
+ECS
+Fixed timestep
 Flash
 Function
 GCC
+GIF
+Git
+Gitignore
 GNU/Linux
 GOG.com
+Go (language)
+H.264
 Haxe
+HTML5
 HTTP
 HTTPS
+itch.io
+iOS
 JavaScript
 LibSDL
 Lua
@@ -27,17 +45,36 @@ LuaJIT
 Ludum Dare
 MacOS
 MinGW
+Minified
 OpenGL
+Opus
+Package Manager
+PEBKAC
 Platformer
+Python
+Python3
+S3
+SIMD
+Source Code
+Source Engine
+Source Film Maker
 Shooter
 Steam
+Subversion
+The Beginner's Guide
+The Stanley Parable
+The Witness
+Threading
 Transport Layer Security
 TypeScript
 Ubuntu
 Unity
 Unreal
+Version Control System
 Visual Studio
+Vorbis
 VPN
 WebAssembly
+WebM
 Windows
 Wolfenstein
