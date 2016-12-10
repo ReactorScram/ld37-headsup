@@ -95,6 +95,7 @@ class Context {
 	
 	// Jiggle timers
 	checkmarkJiggle: number;
+	checkmarkJiggleDirection: number;
 	refreshJiggle: number;
 	loadJiggle: number;
 	
@@ -107,6 +108,7 @@ class Context {
 		this.refreshJiggle = 0;
 		this.numCorrect = 0;
 		this.loadJiggle = 1.0;
+		this.checkmarkJiggleDirection = 0.0;
 	}
 }
 
@@ -296,6 +298,7 @@ function onCheck (ctx: Context, eventData): void {
 	ctx.clickCount = ctx.clickCount + 1;
 	contextPickWord (ctx);
 	ctx.checkmarkJiggle = 1.0;
+	ctx.checkmarkJiggleDirection = Prns.at (Prns.fromNum (ctx.clickCount)).modulo (Prns.fromNum (2)).getLowBitsUnsigned () * 2.0 - 1.0;
 	ctx.numCorrect += 1;
 }
 
@@ -353,7 +356,7 @@ function animate (ctx: Context) {
 		
 		ctx.check.position.x = width * 0.5;
 		ctx.check.position.y = height * (0.5 + loadTween (ctx.loadJiggle)) + 50 * checkTween (ctx.checkmarkJiggle);
-		ctx.check.rotation = 0.1 * checkTween (ctx.checkmarkJiggle);
+		ctx.check.rotation = 0.1 * ctx.checkmarkJiggleDirection * checkTween (ctx.checkmarkJiggle);
 	}
 	else {
 		ctx.richText.text = "Loading...";
