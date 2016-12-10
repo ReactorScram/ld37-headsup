@@ -403,6 +403,28 @@ function refreshRotTween (t: number): number {
 	return ts - 0.25 * Math.sin (Math.PI * 2.0 * ts);
 }
 
+function tickTween (t: number): number {
+	let t2 = 0.0;
+	
+	if (t < 0.125) {
+		t2 = t * 8.0;
+	}
+	else if (t < 0.25) {
+		t2 = (0.25 - t) * 8.0;
+	}
+	
+	return smoothStep (t2);
+}
+
+function tickTockTween (t: number): number {
+	if (t < 0.5) {
+		return tickTween (t * 2.0);
+	}
+	else {
+		return -tickTween (t * 2.0 - 1.0);
+	}
+}
+
 function getTargetBasis (view: any): number {
 	let width = view.offsetWidth;
 	let height = view.offsetHeight;
@@ -484,6 +506,10 @@ function animate (ctx: Context, timestamp) {
 	
 	ctx.renderer.resize (width, height);
 	
+	let timeSeconds = timestamp / 1000.0;
+	let totalTime = 60.0;
+	let timeT = (timeSeconds / totalTime) % 1.0;
+	
 	if (isLoaded (ctx)) {
 		ctx.loadJiggle = jiggleStep (ctx.loadJiggle);
 		ctx.checkmarkJiggle = jiggleStep (ctx.checkmarkJiggle);
@@ -507,9 +533,11 @@ function animate (ctx: Context, timestamp) {
 		ctx.refresh.rotation = -2.0 * Math.PI * refreshRotTween (ctx.refreshJiggle);
 		
 		ctx.clock.position = transform ({ x: 100.0, y: -150.0 });
+		ctx.clock.position.x += 8.0 * timeT * timeT * tickTockTween ((timeSeconds * 0.5) % 1.0);
+		ctx.clock.position.y += loadY;
 		
 		ctx.clockHand.position = ctx.clock.position;
-		ctx.clockHand.rotation = timestamp / (60.0 * 1000.0) * 2.0 * Math.PI;
+		ctx.clockHand.rotation = timeT * 2.0 * Math.PI;
 	}
 	else {
 		ctx.richText.text = "Loading...";
