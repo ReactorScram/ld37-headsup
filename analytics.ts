@@ -90,7 +90,7 @@ class Context {
 	constructor (public Pixi: any, public pseudoCookie: number) {
 		this.clickCount = 0;
 		this.frames = 0;
-		this.prns_output = "0"; //Prns.debug (this.clickCount);
+		this.prns_output = "Click It!"; //Prns.debug (this.clickCount);
 	}
 }
 
@@ -122,7 +122,7 @@ function load (PIXI) {
 	ctx.stage = new PIXI.Container();
 
 	// create a texture from an image path
-	var texture = PIXI.Texture.fromImage('Lenna.png');
+	var texture = PIXI.Texture.fromImage('images/click-me.png');
 
 	// create a new Sprite using the texture
 	let bunny = new PIXI.Sprite(texture);
@@ -130,6 +130,9 @@ function load (PIXI) {
 	// center the sprite's anchor point
 	bunny.anchor.x = 0.5;
 	bunny.anchor.y = 0.5;
+	
+	bunny.scale.x = 0.5;
+	bunny.scale.y = 0.5;
 
 	// move the sprite to the center of the screen
 	bunny.position.x = 400;
