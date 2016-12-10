@@ -1,0 +1,6 @@
+*.exe
+*.min.js
+
+/analytics.js
+/ld37-headsup
+
