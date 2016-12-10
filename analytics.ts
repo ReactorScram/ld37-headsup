@@ -1,3 +1,55 @@
+let Prns = (function () {
+	let Long = dcodeIO.Long;
+	
+	function fromNum (n: number): Long {
+		return Long.fromBits (n, 0, true);
+	}
+	
+	function fromHex (s: string): Long {
+		return Long.fromString (s, true, 16);
+	}
+	
+	let mix_s0 = fromNum (31);
+	let mix_s1 = fromNum (27);
+	let mix_s2 = fromNum (33);
+	let mix_m0 = fromHex ("7fb5d329728ea185");
+	let mix_m1 = fromHex ("81dadef4bc2dd44d");
+	let weyl = fromHex ("61c8864680b583eb");
+	
+	function xs (x: Long, shift: Long): Long {
+		return x.xor (x.shiftRightUnsigned (shift));
+	}
+	
+	function mix (x: Long): Long {
+		x = xs (x, mix_s0);
+		x = x.multiply (mix_m0);
+		x = xs (x, mix_s1);
+		x = x.multiply (mix_m1);
+		x = xs (x, mix_s2);
+		
+		return x;
+	}
+	
+	function at (n: Long): Long {
+		return mix (weyl.multiply (n));
+	}
+	
+	function at_u32 (n: number): number {
+		return at (Long.fromBits (n, 0, true)).getLowBitsUnsigned ();
+	}
+	
+	function debug (n: number): string {
+		return at (fromNum (n)).toString (10);
+	}
+	
+	return {
+		debug: debug,
+		mix: mix,
+		at: at,
+		at_u32: at_u32,
+	};
+})();
+
 interface PixiView {
 	offsetWidth: number;
 	offsetHeight: number;
@@ -27,6 +79,7 @@ class Context {
 	bunny: PixiSprite;
 	clickCount: number;
 	frames: number;
+	prns_output: string;
 	renderer: PixiRenderer;
 	richText: any;
 	stage: PixiStage;
@@ -35,16 +88,20 @@ class Context {
 	constructor (public Pixi: any, public pseudoCookie: number) {
 		this.clickCount = 0;
 		this.frames = 0;
+		this.prns_output = "0"; //Prns.debug (this.clickCount);
 	}
 }
 
 interface Long {
+	getLowBitsUnsigned (): number;
 	multiply (o: Long): Long;
 	xor (o: Long): Long;
-	shiftRight (n: number): Long;
+	shiftRightUnsigned (n: Long): Long;
+	toString (radix: number): string;
 }
 
 interface LongPackage {
+	fromBits (lowBits: number, highBits: number, unsigned: boolean): Long;
 	fromString (s: string, unsigned: boolean, radix: number): Long;
 }
 
@@ -115,6 +172,8 @@ function load (PIXI) {
 function onDown (ctx: Context, eventData) {
 	ctx.clickCount = ctx.clickCount + 1;
 	
+	ctx.prns_output = Prns.debug (ctx.clickCount);
+	
 	console.log (JSON.stringify ({
 		clickCount: ctx.clickCount,
 		frames: ctx.frames,
@@ -139,29 +198,12 @@ function animate (ctx: Context) {
 	
 	ctx.bunny.position.x = width * 0.5;
 	ctx.bunny.position.y = height * 0.5;
-	
+	/*
 	ctx.richText.text = "Click Lenna to send me data! You have clicked " + ctx.clickCount + " times!";
+	*/
+	
+	ctx.richText.text = ctx.clickCount + " -> " + ctx.prns_output;
 	
 	// render the container
 	ctx.renderer.render(ctx.stage);
 }
-
-let Prns = (function () {
-	let mix_s0 = 31;
-	let mix_s1 = 27;
-	let mix_s2 = 33;
-	let mix_m0 = <Long>dcodeIO.Long.fromString ("7fb5d329728ea185", true, 16);
-	let mix_m1 = <Long>dcodeIO.Long.fromString ("0x81dadef4bc2dd44d", true, 16);
-	
-	function mix (x: Long): Long {
-		x = x.xor (x.shiftRight (mix_s0));
-		x = x.multiply (mix_m0);
-		
-		
-		return x;
-	}
-	
-	return {
-		mix: mix,
-	};
-})();
