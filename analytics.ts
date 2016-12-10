@@ -77,10 +77,13 @@ interface PixiSprite {
 }
 
 class Context {
-	bunny: PixiSprite;
+	check: PixiSprite;
+	refresh: PixiSprite;
+	
 	clickCount: number;
+	numCorrect: number;
 	frames: number;
-	prns_output: string;
+	display: string;
 	renderer: PixiRenderer;
 	richText: any;
 	stage: PixiStage;
@@ -90,11 +93,20 @@ class Context {
 	// Must stay sorted for the algo to be efficient
 	usedWordList: Array <number>;
 	
+	// Jiggle timers
+	checkmarkJiggle: number;
+	refreshJiggle: number;
+	loadJiggle: number;
+	
 	constructor (public Pixi: any, public pseudoCookie: number) {
 		this.clickCount = 0;
 		this.frames = 0;
-		this.prns_output = "Click It!"; //Prns.debug (this.clickCount);
+		this.display = "Loading...";
 		this.usedWordList = [];
+		this.checkmarkJiggle = 0;
+		this.refreshJiggle = 0;
+		this.numCorrect = 0;
+		this.loadJiggle = 1.0;
 	}
 }
 
@@ -119,40 +131,55 @@ class dcodeIO {
 function load (PIXI) {
 	let ctx = new Context (PIXI, Math.floor (Math.random () * 1024 * 1024 * 1024));
 	
-	ctx.renderer = PIXI.autoDetectRenderer(1280, 720,{backgroundColor : 0x1099bb});
+	ctx.renderer = PIXI.autoDetectRenderer(1280, 720,{backgroundColor : 0x62c6cc});
 	document.body.appendChild(ctx.renderer.view);
 	
 	// create the root of the scene graph
 	ctx.stage = new PIXI.Container();
 	
 	// create a texture from an image path
-	var texture = PIXI.Texture.fromImage('images/click-me.png');
+	let checkTex = PIXI.Texture.fromImage('images/checkmark.png');
 	
 	// create a new Sprite using the texture
-	let bunny = new PIXI.Sprite(texture);
+	let check = new PIXI.Sprite(checkTex);
 	
 	// center the sprite's anchor point
-	bunny.anchor.x = 0.5;
-	bunny.anchor.y = 0.5;
+	check.anchor.x = 0.5;
+	check.anchor.y = 0.5;
 	
-	bunny.scale.x = 0.5;
-	bunny.scale.y = 0.5;
+	check.scale.x = 0.5;
+	check.scale.y = 0.5;
 	
-	// move the sprite to the center of the screen
-	bunny.position.x = 400;
-	bunny.position.y = 240;
-	
-	let localOnDown = function (eventData) {
-		onDown (ctx, eventData);
+	let localCheck = function (eventData) {
+		onCheck (ctx, eventData);
 	};
 	
-	bunny.interactive = true;
-	bunny.on('mousedown', localOnDown);
-	bunny.on('touchstart', localOnDown);
+	check.interactive = true;
+	check.on('mousedown', localCheck);
+	check.on('touchstart', localCheck);
 	
-	ctx.bunny = bunny;
+	ctx.check = check;
 	
-	ctx.stage.addChild(ctx.bunny);
+	let refreshTex = PIXI.Texture.fromImage ("images/refresh.png");
+	let refresh = new PIXI.Sprite (refreshTex);
+	
+	refresh.anchor.x = 0.5;
+	refresh.anchor.y = 0.5;
+	
+	refresh.scale.x = 0.5;
+	refresh.scale.y = 0.5;
+	
+	let localRefresh = function (eventData) {
+		onRefresh (ctx, eventData);
+	}
+	
+	refresh.interactive = true;
+	refresh.on ("mousedown", localRefresh);
+	refresh.on ("touchstart", localRefresh);
+	
+	ctx.refresh = refresh;
+	
+	ctx.stage.addChild(ctx.check);
 	
 	ctx.style = {
 		fontFamily : 'Arial',
@@ -196,10 +223,11 @@ function loadWordList (ctx: Context): void {
 
 function tryFinishLoading (ctx: Context): void {
 	if (isLoaded (ctx)) {
-		console.log ("Loaded!");
+		// Pick first word
+		contextPickWord (ctx);
 	}
 	else {
-		console.log ("wordList = " + ctx.wordList);
+		//
 	}
 }
 
@@ -243,15 +271,18 @@ function pickWord (wordList: Array <string>, usedWordList: Array <number>, rnd: 
 	return i;
 }
 
-function onDown (ctx: Context, eventData): void {
+function contextPickWord (ctx: Context): void {
+	ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount)))];
+	//console.log ("Used " + ctx.usedWordList.length + " words");
+}
+
+function onCheck (ctx: Context, eventData): void {
+	/*
 	ctx.clickCount = ctx.clickCount + 1;
 	
 	if (isLoaded (ctx)) {
-		ctx.prns_output = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount)))];
+		ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount)))];
 		console.log ("Used " + ctx.usedWordList.length + " words");
-	}
-	else {
-		ctx.prns_output = "Loading words...";
 	}
 	
 	console.log (JSON.stringify ({
@@ -260,6 +291,42 @@ function onDown (ctx: Context, eventData): void {
 		pseudoCookie: ctx.pseudoCookie,
 		date: Date.now ()
 	}));
+	*/
+	
+	contextPickWord (ctx);
+	ctx.checkmarkJiggle = 1.0;
+	ctx.numCorrect += 1;
+}
+
+function onRefresh (ctx: Context, eventData): void {
+	contextPickWord (ctx);
+	ctx.refreshJiggle = 1.0;
+}
+
+function jiggleClamp (t: number): number {
+	if (t < 0.0) {
+		return 0.0;
+	}
+	else if (t > 1.0) {
+		return 1.0;
+	}
+	else {
+		return t;
+	}
+}
+
+function loadTween (t: number): number {
+	if (t == 0.0) {
+		return 0.0;
+	}
+	return 0.5 * t * t + 0.5 * t * Math.sin (8.25 * Math.PI * Math.pow (t, 0.5));
+}
+
+function checkTween (t: number): number {
+	if (t == 0.0) {
+		return 0.0;
+	}
+	return t * t * Math.sin (12 * Math.PI * t);
 }
 
 function animate (ctx: Context) {
@@ -267,22 +334,36 @@ function animate (ctx: Context) {
 		animate (ctx);
 	});
 	
+	let animRate: number = 1.0 / 60.0;
+	
+	function jiggleStep (t: number): number {
+		return jiggleClamp (t - animRate);
+	}
+	
 	let width = ctx.renderer.view.offsetWidth;
 	let height = ctx.renderer.view.offsetHeight;
 	
 	ctx.renderer.resize (width, height);
 	
-	// just for fun, let's rotate ms rabbit a little
-	ctx.bunny.rotation = ctx.frames * 0.005;
+	if (isLoaded (ctx)) {
+		ctx.loadJiggle = jiggleStep (ctx.loadJiggle);
+		ctx.checkmarkJiggle = jiggleStep (ctx.checkmarkJiggle);
+		ctx.richText.text = ctx.display + "\nScore: " + ctx.numCorrect;
+		
+		ctx.check.position.x = width * 0.5;
+		ctx.check.position.y = height * (0.5 + loadTween (ctx.loadJiggle)) + 50 * checkTween (ctx.checkmarkJiggle);
+		ctx.check.rotation = 0.1 * checkTween (ctx.checkmarkJiggle);
+	}
+	else {
+		ctx.richText.text = "Loading...";
+	}
+	
 	ctx.frames = ctx.frames + 1;
 	
-	ctx.bunny.position.x = width * 0.5;
-	ctx.bunny.position.y = height * 0.5;
-	/*
-	ctx.richText.text = "Click Lenna to send me data! You have clicked " + ctx.clickCount + " times!";
-	*/
+	//ctx.bunny.position.x = width * 0.5;
+	//ctx.bunny.position.y = height * 0.5;
 	
-	ctx.richText.text = ctx.clickCount + " -> " + ctx.prns_output;
+	
 	
 	// render the container
 	ctx.renderer.render(ctx.stage);
