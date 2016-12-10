@@ -275,28 +275,12 @@ function pickWord (wordList: Array <string>, usedWordList: Array <number>, rnd: 
 }
 
 function contextPickWord (ctx: Context): void {
-	ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount + 1)))];
+	ctx.clickCount = ctx.clickCount + 1;
+	ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount)))];
 	//console.log ("Used " + ctx.usedWordList.length + " words");
 }
 
 function onCheck (ctx: Context, eventData): void {
-	/*
-	ctx.clickCount = ctx.clickCount + 1;
-	
-	if (isLoaded (ctx)) {
-		ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount)))];
-		console.log ("Used " + ctx.usedWordList.length + " words");
-	}
-	
-	console.log (JSON.stringify ({
-		clickCount: ctx.clickCount,
-		frames: ctx.frames,
-		pseudoCookie: ctx.pseudoCookie,
-		date: Date.now ()
-	}));
-	*/
-	
-	ctx.clickCount = ctx.clickCount + 1;
 	contextPickWord (ctx);
 	ctx.checkmarkJiggle = 1.0;
 	ctx.checkmarkJiggleDirection = Prns.at (Prns.fromNum (ctx.clickCount)).modulo (Prns.fromNum (2)).getLowBitsUnsigned () * 2.0 - 1.0;
@@ -334,11 +318,26 @@ function checkTween (t: number): number {
 	return t * t * Math.sin (12 * Math.PI * t);
 }
 
-function refreshTween (t: number): number {
+function smoothStep (t: number): number {
 	if (t == 0.0) {
 		return 0.0;
 	}
-	return t - 0.25 * Math.sin (Math.PI * 2.0 * t);
+	return 3 * t * t - 2 * t * t * t;
+}
+
+function refreshYTween (t: number): number {
+	if (t == 0.0) {
+		return 0.0;
+	}
+	return Math.sin (Math.PI * 2.0 * smoothStep (t));
+}
+
+function refreshRotTween (t: number): number {
+	if (t == 0.0) {
+		return 0.0;
+	}
+	let ts = smoothStep (t);
+	return ts - 0.25 * Math.sin (Math.PI * 2.0 * ts);
 }
 
 function animate (ctx: Context) {
@@ -346,7 +345,7 @@ function animate (ctx: Context) {
 		animate (ctx);
 	});
 	
-	let animRate: number = 1.0 / 60.0;
+	let animRate: number = 1.0 / 30.0;
 	
 	function jiggleStep (t: number): number {
 		return jiggleClamp (t - animRate);
@@ -355,16 +354,33 @@ function animate (ctx: Context) {
 	let width = ctx.renderer.view.offsetWidth;
 	let height = ctx.renderer.view.offsetHeight;
 	
+	let basisX = 1.0;
+	let basisY = 0.0;
+	
+	if (height > width) {
+		basisX = 0.0;
+		basisY = 1.0;
+	}
+	
 	ctx.renderer.resize (width, height);
 	
 	if (isLoaded (ctx)) {
 		ctx.loadJiggle = jiggleStep (ctx.loadJiggle);
 		ctx.checkmarkJiggle = jiggleStep (ctx.checkmarkJiggle);
+		ctx.refreshJiggle = jiggleStep (ctx.refreshJiggle);
 		ctx.richText.text = ctx.display + "\nScore: " + ctx.numCorrect;
 		
-		ctx.check.position.x = width * 0.5;
-		ctx.check.position.y = height * (0.5 + loadTween (ctx.loadJiggle)); // + 50 * checkTween (ctx.checkmarkJiggle);
-		ctx.check.rotation = 2 * Math.PI * ctx.checkmarkJiggleDirection * refreshTween (ctx.checkmarkJiggle);
+		let loadT = loadTween (ctx.loadJiggle);
+		let checkT = checkTween (ctx.checkmarkJiggle);
+		//let refreshT = refreshTween (ctx.refreshJiggle);
+		
+		ctx.check.position.x = width * 0.5 + 100 * basisX;
+		ctx.check.position.y = height * (0.5 + loadT) + 50 * checkT + 100 * basisY;
+		ctx.check.rotation = 0.2 * ctx.checkmarkJiggleDirection * checkT;
+		
+		ctx.refresh.position.x = width * 0.5 - 150 * basisX;
+		ctx.refresh.position.y = height * (0.5 + loadT) + 30 * refreshYTween (ctx.refreshJiggle) - 150 * basisY;
+		ctx.refresh.rotation = -2.0 * Math.PI * refreshRotTween (ctx.refreshJiggle);
 	}
 	else {
 		ctx.richText.text = "Loading...";
