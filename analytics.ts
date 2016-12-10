@@ -265,6 +265,7 @@ function tryFinishLoading (ctx: Context): void {
 	if (isLoaded (ctx)) {
 		// Pick first word
 		contextPickWord (ctx);
+		//startAnimating (ctx);
 	}
 	else {
 		//
@@ -324,6 +325,7 @@ function onCheck (ctx: Context, eventData): void {
 	ctx.numCorrect += 1;
 	
 	ctx.sounds.get (ESound.Correct).play ();
+	//startAnimating (ctx);
 }
 
 function onRefresh (ctx: Context, eventData): void {
@@ -331,6 +333,7 @@ function onRefresh (ctx: Context, eventData): void {
 	ctx.refreshJiggle = 1.0;
 	
 	ctx.sounds.get (ESound.Refresh).play ();
+	//startAnimating (ctx);
 }
 
 function jiggleClamp (t: number): number {
@@ -393,10 +396,16 @@ function getTargetBasis (view: any): number {
 	}
 }
 
-function animate (ctx: Context) {
+function startAnimating (ctx: Context) {
 	requestAnimationFrame(function () {
 		animate (ctx);
 	});
+}
+
+function animate (ctx: Context) {
+	let anythingChanged = ctx.checkmarkJiggle > 0.0 || ctx.refreshJiggle > 0.0 || ctx.loadJiggle > 0.0 || ctx.basisJiggle > 0.0;
+	
+	startAnimating (ctx);
 	
 	let animRate: number = 1.0 / 30.0;
 	
@@ -460,5 +469,7 @@ function animate (ctx: Context) {
 	ctx.frames = ctx.frames + 1;
 	
 	// render the container
-	ctx.renderer.render(ctx.stage);
+	if (anythingChanged) {
+		ctx.renderer.render(ctx.stage);
+	}
 }
