@@ -214,22 +214,22 @@ function insertSorted (list: Array <number>, value: number): void {
 	list.sort(function(a, b){return a-b});
 }
 
-function pickWord (ctx: Context): number {
+function pickWord (wordList: Array <string>, usedWordList: Array <number>, rnd: Long): number {
 	//let length = Prns.fromNum (ctx.wordList.length);
 	
-	let wordListLength = 5; // ctx.wordList.length;
+	let wordListLength = wordList.length;
 	
-	if (ctx.usedWordList.length == wordListLength) {
+	if (usedWordList.length == wordListLength) {
 		// Ran out of words, re-shuffle
 		// This should not happen in a typical 60-second game
-		ctx.usedWordList = [];
+		usedWordList = [];
 	}
 	
-	let length = Prns.fromNum (wordListLength - ctx.usedWordList.length);
+	let length = Prns.fromNum (wordListLength - usedWordList.length);
 	
-	let i = Prns.at (Prns.fromNum (ctx.clickCount)).modulo (length).getLowBitsUnsigned ();
+	let i = rnd.modulo (length).getLowBitsUnsigned ();
 	
-	ctx.usedWordList.forEach (function (strike) {
+	usedWordList.forEach (function (strike) {
 		if (i >= strike) {
 			i = i + 1;
 		}
@@ -238,7 +238,7 @@ function pickWord (ctx: Context): number {
 		}
 	});
 	
-	insertSorted (ctx.usedWordList, i);
+	insertSorted (usedWordList, i);
 	
 	return i;
 }
@@ -247,7 +247,8 @@ function onDown (ctx: Context, eventData): void {
 	ctx.clickCount = ctx.clickCount + 1;
 	
 	if (isLoaded (ctx)) {
-		ctx.prns_output = ctx.wordList [pickWord (ctx)];
+		ctx.prns_output = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount)))];
+		console.log ("Used " + ctx.usedWordList.length + " words");
 	}
 	else {
 		ctx.prns_output = "Loading words...";
