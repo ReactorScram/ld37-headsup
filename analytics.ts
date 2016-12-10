@@ -38,6 +38,20 @@ class Context {
 	}
 }
 
+interface Long {
+	multiply (o: Long): Long;
+	xor (o: Long): Long;
+	shiftRight (n: number): Long;
+}
+
+interface LongPackage {
+	fromString (s: string, unsigned: boolean, radix: number): Long;
+}
+
+class dcodeIO {
+	static Long: LongPackage;
+}
+
 function load (PIXI) {
 	let ctx = new Context (PIXI, Math.floor (Math.random () * 1024 * 1024 * 1024));
 	
@@ -131,3 +145,23 @@ function animate (ctx: Context) {
 	// render the container
 	ctx.renderer.render(ctx.stage);
 }
+
+let Prns = (function () {
+	let mix_s0 = 31;
+	let mix_s1 = 27;
+	let mix_s2 = 33;
+	let mix_m0 = <Long>dcodeIO.Long.fromString ("7fb5d329728ea185", true, 16);
+	let mix_m1 = <Long>dcodeIO.Long.fromString ("0x81dadef4bc2dd44d", true, 16);
+	
+	function mix (x: Long): Long {
+		x = x.xor (x.shiftRight (mix_s0));
+		x = x.multiply (mix_m0);
+		
+		
+		return x;
+	}
+	
+	return {
+		mix: mix,
+	};
+})();
