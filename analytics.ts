@@ -78,6 +78,7 @@ interface PixiSprite {
 
 enum ESound {
 	Correct,
+	Refresh,
 }
 
 class Context {
@@ -121,9 +122,12 @@ class Context {
 		this.basisJiggle = 0.0;
 		
 		this.sounds = new Map ([
-			[ESound.Correct, new Howl({
+			[ESound.Correct, new Howl ({
 				src: ['sounds/correct.webm']
-			})]
+			})],
+			[ESound.Refresh, new Howl ({
+				src: ['sounds/refresh.webm']
+			})],
 		]);
 	}
 }
@@ -222,6 +226,8 @@ function load (PIXI) {
 	
 	ctx.stage.addChild(ctx.richText);
 	
+	ctx.basisJiggle = getTargetBasis (ctx.renderer.view);
+	
 	animate (ctx);
 	
 	loadWordList (ctx);
@@ -308,6 +314,8 @@ function onCheck (ctx: Context, eventData): void {
 function onRefresh (ctx: Context, eventData): void {
 	contextPickWord (ctx);
 	ctx.refreshJiggle = 1.0;
+	
+	ctx.sounds.get (ESound.Refresh).play ();
 }
 
 function jiggleClamp (t: number): number {
@@ -358,6 +366,18 @@ function refreshRotTween (t: number): number {
 	return ts - 0.25 * Math.sin (Math.PI * 2.0 * ts);
 }
 
+function getTargetBasis (view: any): number {
+	let width = view.offsetWidth;
+	let height = view.offsetHeight;
+	
+	if (height > width) {
+		return 1.0;
+	}
+	else {
+		return 0.0;
+	}
+}
+
 function animate (ctx: Context) {
 	requestAnimationFrame(function () {
 		animate (ctx);
@@ -389,12 +409,7 @@ function animate (ctx: Context) {
 	let width = ctx.renderer.view.offsetWidth;
 	let height = ctx.renderer.view.offsetHeight;
 	
-	if (height > width) {
-		ctx.targetBasisAngle = 1.0;
-	}
-	else {
-		ctx.targetBasisAngle = 0.0;
-	}
+	ctx.targetBasisAngle = getTargetBasis (ctx.renderer.view);
 	
 	ctx.basisJiggle = jiggleTowards (ctx.basisJiggle, ctx.targetBasisAngle);
 	
