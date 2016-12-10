@@ -11,8 +11,8 @@ API
 ARM
 Array
 Audacity
-Auto-Aim
 Authoritative server
+Auto-Aim
 Automatic Updater
 AWS
 Backend
@@ -47,6 +47,8 @@ Comment
 Commit
 Compiling
 Copyleft
+Copyright
+CSS
 Cutscene
 CVS
 Cygwin
@@ -58,9 +60,11 @@ Determinism
 Differential Equations
 Diffuse lighting
 DirectX
-Dynamic-Link Library
+DLC
+DMCA
 DOOM
 Dynamic mix
+Dynamic-Link Library
 Easter Egg
 ECS
 Emacs
@@ -75,6 +79,7 @@ Fixed timestep
 FLAC
 Flash
 FMV
+Followers
 Free software
 Frontend
 Fullscreen
@@ -131,12 +136,15 @@ Lazy Evaluation
 Let's Encrypt
 Let's Play
 LibSDL
+LLVM
 Loot
 Lua
 LuaJIT
 Ludum Dare
+Lurkers
 MacOS
 Makefile
+Markdown
 Marketing
 Matrix
 Meta
@@ -146,8 +154,11 @@ Minified
 MiniLD
 MMORPG
 MOBA
+Modding
 Mozilla Firefox
 Mumble
+Naming convention
+Naming your game
 Native
 Networking
 Nginx
@@ -156,18 +167,20 @@ October Challenge
 OpenGL
 Opus
 Package Manager
-Physically-Based Rendering
 PEBKAC
 Peer-to-peer
+Perlin Noise
 Phaser
+Physically-Based Rendering
 Physics engine
 Pickup
 Pixel art
+Plaintext
 Platformer
 PNG
 Portable Application
-Powerup
 Pouet
+Powerup
 PRNG
 ProcGen
 Prop
@@ -193,13 +206,14 @@ Safari
 Saturation
 Screenshake
 Seed
-Sequencer
 SEO
+Sequencer
 Sfxr
 Shader
 Shooter
 Side-Scroller
 SIMD
+Simplex Noise
 Soundtrack
 Source Code
 Source Engine
@@ -209,10 +223,12 @@ Sprite
 Spritesheet
 SQL
 SQLite
+SSH
 Static function
 Static linking
 Steam
 Subversion
+Sunlight
 Super Meat Boy
 TCP
 Terrain
@@ -222,6 +238,7 @@ The Beginner's Guide
 The Stanley Parable
 The Witness
 Threading
+Tilable texture
 TILED
 Tool-Assisted Speedrun
 Top-Down
@@ -257,6 +274,7 @@ WaveFront OBJ
 WebAssembly
 WebGL
 WebM
+Wiki
 Windows
 Wolfenstein
 x86

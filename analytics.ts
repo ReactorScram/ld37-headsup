@@ -44,6 +44,7 @@ let Prns = (function () {
 	
 	return {
 		debug: debug,
+		fromNum: fromNum,
 		mix: mix,
 		at: at,
 		at_u32: at_u32,
@@ -84,6 +85,7 @@ class Context {
 	richText: any;
 	stage: PixiStage;
 	style: any;
+	wordList: Array <string>;
 	
 	constructor (public Pixi: any, public pseudoCookie: number) {
 		this.clickCount = 0;
@@ -94,6 +96,7 @@ class Context {
 
 interface Long {
 	getLowBitsUnsigned (): number;
+	modulo (o: Long): Long;
 	multiply (o: Long): Long;
 	xor (o: Long): Long;
 	shiftRightUnsigned (n: Long): Long;
@@ -167,12 +170,45 @@ function load (PIXI) {
 	ctx.stage.addChild(ctx.richText);
 	
 	animate (ctx);
+	
+	loadWordList (ctx);
 }
 
-function onDown (ctx: Context, eventData) {
+function loadWordList (ctx: Context): void {
+	// Modified from the MDN example
+	var oReq = new XMLHttpRequest();
+	oReq.open("GET", "word-lists/ludumdare.json", true);
+	oReq.onload = function () {
+		if (oReq.readyState === 4) {
+			ctx.wordList = JSON.parse (oReq.responseText);
+			tryFinishLoading (ctx);
+		}
+	}
+	oReq.send(null);
+}
+
+function tryFinishLoading (ctx: Context): void {
+	if (isLoaded (ctx)) {
+		console.log ("Loaded!");
+	}
+	else {
+		console.log ("wordList = " + ctx.wordList);
+	}
+}
+
+function isLoaded (ctx: Context): boolean {
+	return ctx.wordList != null && ctx.wordList.length > 0;
+}
+
+function onDown (ctx: Context, eventData): void {
 	ctx.clickCount = ctx.clickCount + 1;
 	
-	ctx.prns_output = Prns.debug (ctx.clickCount);
+	if (isLoaded (ctx)) {
+	ctx.prns_output = ctx.wordList [Prns.at (Prns.fromNum (ctx.clickCount)).modulo (Prns.fromNum (ctx.wordList.length)).getLowBitsUnsigned ()];
+	}
+	else {
+		ctx.prns_output = "Loading words...";
+	}
 	
 	console.log (JSON.stringify ({
 		clickCount: ctx.clickCount,
