@@ -272,7 +272,7 @@ function pickWord (wordList: Array <string>, usedWordList: Array <number>, rnd: 
 }
 
 function contextPickWord (ctx: Context): void {
-	ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount)))];
+	ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount + 1)))];
 	//console.log ("Used " + ctx.usedWordList.length + " words");
 }
 
@@ -293,6 +293,7 @@ function onCheck (ctx: Context, eventData): void {
 	}));
 	*/
 	
+	ctx.clickCount = ctx.clickCount + 1;
 	contextPickWord (ctx);
 	ctx.checkmarkJiggle = 1.0;
 	ctx.numCorrect += 1;
