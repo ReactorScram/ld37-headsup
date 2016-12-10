@@ -61,7 +61,7 @@ interface PixiStage {
 }
 
 interface PixiRenderer {
-	view: HTMLElement;
+	view: any;
 	render (stage: PixiStage): void;
 	resize (width: number, height: number): void;
 }
@@ -74,6 +74,10 @@ interface Vec2 {
 interface PixiSprite {
 	rotation: number;
 	position: Vec2;
+}
+
+enum ESound {
+	Correct,
 }
 
 class Context {
@@ -102,6 +106,8 @@ class Context {
 	loadJiggle: number;
 	basisJiggle: number;
 	
+	sounds: Map <ESound, any>;
+	
 	constructor (public Pixi: any, public pseudoCookie: number) {
 		this.clickCount = 0;
 		this.frames = 0;
@@ -113,6 +119,12 @@ class Context {
 		this.loadJiggle = 1.0;
 		this.checkmarkJiggleDirection = 0.0;
 		this.basisJiggle = 0.0;
+		
+		this.sounds = new Map ([
+			[ESound.Correct, new Howl({
+				src: ['sounds/correct.webm']
+			})]
+		]);
 	}
 }
 
@@ -287,8 +299,10 @@ function contextPickWord (ctx: Context): void {
 function onCheck (ctx: Context, eventData): void {
 	contextPickWord (ctx);
 	ctx.checkmarkJiggle = 1.0;
-	ctx.checkmarkJiggleDirection = Prns.at (Prns.fromNum (ctx.clickCount)).modulo (Prns.fromNum (2)).getLowBitsUnsigned () * 2.0 - 1.0;
+	ctx.checkmarkJiggleDirection = ctx.clickCount % 2.0 * 2.0 - 1.0;
 	ctx.numCorrect += 1;
+	
+	ctx.sounds.get (ESound.Correct).play ();
 }
 
 function onRefresh (ctx: Context, eventData): void {
@@ -414,11 +428,6 @@ function animate (ctx: Context) {
 	}
 	
 	ctx.frames = ctx.frames + 1;
-	
-	//ctx.bunny.position.x = width * 0.5;
-	//ctx.bunny.position.y = height * 0.5;
-	
-	
 	
 	// render the container
 	ctx.renderer.render(ctx.stage);
