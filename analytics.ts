@@ -1,5 +1,45 @@
-function load () {
-	let ctx = {};
+interface PixiView {
+	offsetWidth: number;
+	offsetHeight: number;
+}
+
+interface PixiStage {
+	addChild (child: any): void;
+}
+
+interface PixiRenderer {
+	view: HTMLElement;
+	render (stage: PixiStage): void;
+	resize (width: number, height: number): void;
+}
+
+interface Vec2 {
+	x: number;
+	y: number;
+}
+
+interface PixiSprite {
+	rotation: number;
+	position: Vec2;
+}
+
+class Context {
+	bunny: PixiSprite;
+	clickCount: number;
+	frames: number;
+	renderer: PixiRenderer;
+	richText: any;
+	stage: PixiStage;
+	style: any;
+	
+	constructor (public Pixi: any, public pseudoCookie: number) {
+		this.clickCount = 0;
+		this.frames = 0;
+	}
+}
+
+function load (PIXI) {
+	let ctx = new Context (PIXI, Math.floor (Math.random () * 1024 * 1024 * 1024));
 	
 	ctx.renderer = PIXI.autoDetectRenderer(1280, 720,{backgroundColor : 0x1099bb});
 	document.body.appendChild(ctx.renderer.view);
@@ -54,16 +94,11 @@ function load () {
 	ctx.richText.y = 10;
 
 	ctx.stage.addChild(ctx.richText);
-
-	ctx.clickCount = 0;
-	ctx.frames = 0;
-	
-	ctx.pseudoCookie = Math.floor (Math.random () * 1024 * 1024 * 1024);
 	
 	animate (ctx);
 }
 
-function onDown (ctx, eventData) {
+function onDown (ctx: Context, eventData) {
 	ctx.clickCount = ctx.clickCount + 1;
 	
 	console.log (JSON.stringify ({
@@ -74,7 +109,7 @@ function onDown (ctx, eventData) {
 	}));
 }
 
-function animate (ctx) {
+function animate (ctx: Context) {
 	requestAnimationFrame(function () {
 		animate (ctx);
 	});
