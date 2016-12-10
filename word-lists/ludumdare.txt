@@ -1,14 +1,17 @@
 1HGJ
 3D model
+ABI
 ActionScript
 Advertisement
 Amazon
 AMD
 Android
 ANGLE
+API
 ARM
 Array
 Audacity
+Auto-Aim
 Authoritative server
 Automatic Updater
 AWS
@@ -20,9 +23,12 @@ Black triangle
 Blackberry
 Blender 3D
 Bloom
+Boilerplate
+Boss
 Box2D
 Braid
 Branch
+Bug
 Bullet
 C#
 C++
@@ -32,6 +38,7 @@ Checksum
 Chromatic Aberration
 Clang
 Class
+CLI
 Client-Server
 Cloudflare
 Cloudfront
@@ -51,8 +58,10 @@ Determinism
 Differential Equations
 Diffuse lighting
 DirectX
+Dynamic-Link Library
 DOOM
 Dynamic mix
+Easter Egg
 ECS
 Emacs
 Emscripten
@@ -60,6 +69,7 @@ Enum
 Erlang
 Euler Angle
 Euler Integration
+Final Boss
 Fisheye
 Fixed timestep
 FLAC
@@ -88,6 +98,7 @@ GOG.com
 Google Chrome
 GPL
 GPU
+GUI
 H.264
 Hack the Planet
 Hash
@@ -146,10 +157,12 @@ PEBKAC
 Peer-to-peer
 Phaser
 Physics engine
+Pickup
 Pixel art
 Platformer
 PNG
 Portable Application
+Powerup
 Pouet
 PRNG
 ProcGen
@@ -173,7 +186,9 @@ S3
 Safari
 Saturation
 Screenshake
+Seed
 Sequencer
+SEO
 Sfxr
 Shader
 Shooter
@@ -188,6 +203,7 @@ Sprite
 Spritesheet
 SQL
 SQLite
+Static linking
 Steam
 Subversion
 Super Meat Boy
@@ -238,3 +254,4 @@ Wolfenstein
 x86
 XML
 XYZ
+YouTube
