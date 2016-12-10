@@ -1,3 +1,18 @@
+declare var document: any;
+declare function requestAnimationFrame (fn: any): void;
+declare class Howl {
+	constructor (params: Object);
+	play (): void;
+}
+declare class XMLHttpRequest {
+	onload: any;
+	readyState: number;
+	responseText: string;
+	
+	open (verb: string, url: string, async: boolean): void;
+	send (idk: any): void;
+}
+
 let Prns = (function () {
 	let Long = dcodeIO.Long;
 	
@@ -424,7 +439,7 @@ function animate (ctx: Context) {
 		ctx.loadJiggle = jiggleStep (ctx.loadJiggle);
 		ctx.checkmarkJiggle = jiggleStep (ctx.checkmarkJiggle);
 		ctx.refreshJiggle = jiggleStep (ctx.refreshJiggle);
-		ctx.richText.text = ctx.display + "\nScore: " + ctx.numCorrect;
+		ctx.richText.text = ctx.display;
 		
 		let loadT = loadTween (ctx.loadJiggle);
 		let checkT = checkTween (ctx.checkmarkJiggle);
