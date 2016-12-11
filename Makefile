@@ -12,4 +12,4 @@ word-lists/ludumdare.json: word-lists/ludumdare.txt
 	lua lines-to-json.lua < $< > $@
 
 analytics.exe: server.go
-	go build -o $@ $<
+	CC=/usr/bin/musl-gcc go build --ldflags '-linkmode external -extldflags "-static"' -o $@ $<
