@@ -100,7 +100,15 @@ interface PixiSprite {
 
 enum ESound {
 	Correct,
+	Finished,
 	Refresh,
+	Tick,
+}
+
+enum EGameState {
+	WaitingToStart,
+	Playing,
+	Finished,
 }
 
 class Context {
@@ -135,6 +143,11 @@ class Context {
 	
 	sounds: Map <ESound, any>;
 	
+	// Actual game logic
+	startTimestamp: number;
+	gameState: EGameState;
+	nextTick: number;
+	
 	constructor (public Pixi: any, public pseudoCookie: Long) {
 		this.clickCount = 0;
 		this.frames = 0;
@@ -148,14 +161,22 @@ class Context {
 		this.basisJiggle = 0.0;
 		this.textJiggle = 0.0;
 		
+		function loadSound (name) {
+			return new Howl ({
+				src: ["sounds/" + name + ".ogg", "sounds/" + name + ".webm"]
+			});
+		}
+		
 		this.sounds = new Map ([
-			[ESound.Correct, new Howl ({
-				src: ['sounds/correct.ogg', 'sounds/correct.webm']
-			})],
-			[ESound.Refresh, new Howl ({
-				src: ['sounds/refresh.ogg', 'sounds/refresh.webm']
-			})],
+			[ESound.Correct, loadSound ("correct")],
+			[ESound.Finished, loadSound ("finished")],
+			[ESound.Refresh, loadSound ("refresh")],
+			[ESound.Tick, loadSound ("tick")],
 		]);
+		
+		this.startTimestamp = null;
+		this.gameState = EGameState.WaitingToStart;
+		this.nextTick = 0;
 	}
 }
 
@@ -290,9 +311,7 @@ function loadWordList (ctx: Context): void {
 
 function tryFinishLoading (ctx: Context): void {
 	if (isLoaded (ctx)) {
-		// Pick first word
-		contextPickWord (ctx);
-		//startAnimating (ctx);
+		
 	}
 	else {
 		//
@@ -342,10 +361,17 @@ function pickWord (wordList: Array <string>, usedWordList: Array <number>, rnd: 
 function contextPickWord (ctx: Context): void {
 	ctx.clickCount = ctx.clickCount + 1;
 	ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount).multiply (ctx.pseudoCookie)))];
+	if (ctx.gameState == EGameState.WaitingToStart) {
+		ctx.gameState = EGameState.Playing;
+	}
 	//console.log ("Used " + ctx.usedWordList.length + " words");
 }
 
 function onCheck (ctx: Context, eventData): void {
+	if (ctx.gameState == EGameState.Finished) {
+		return;
+	}
+	
 	contextPickWord (ctx);
 	ctx.checkmarkJiggle = 1.0;
 	ctx.checkmarkJiggleDirection = ctx.clickCount % 2.0 * 2.0 - 1.0;
@@ -355,6 +381,10 @@ function onCheck (ctx: Context, eventData): void {
 }
 
 function onRefresh (ctx: Context, eventData): void {
+	if (ctx.gameState == EGameState.Finished) {
+		return;
+	}
+	
 	contextPickWord (ctx);
 	ctx.refreshJiggle = 1.0;
 	
@@ -513,9 +543,27 @@ function animate (ctx: Context, timestamp) {
 	
 	ctx.renderer.resize (width, height);
 	
-	let timeSeconds = timestamp / 1000.0;
+	if (ctx.startTimestamp === null) {
+		ctx.startTimestamp = timestamp;
+	}
+	
+	let timeSeconds = (timestamp - ctx.startTimestamp) / 1000.0;
 	let totalTime = 60.0;
-	let timeT = (timeSeconds / totalTime) % 1.0;
+	let timeT = (timeSeconds / totalTime);
+	
+	if (timeT > 1.0) {
+		timeT = 1.0;
+		if (ctx.gameState == EGameState.Playing) {
+			ctx.sounds.get (ESound.Finished).play ();
+			ctx.gameState = EGameState.Finished;
+		}
+	}
+	else {
+		if (timeSeconds > ctx.nextTick && timeSeconds >= 55.0 && timeSeconds < 60.0) {
+			ctx.sounds.get (ESound.Tick).play ();
+			ctx.nextTick = Math.ceil (timeSeconds);
+		}
+	}
 	
 	if (isLoaded (ctx)) {
 		ctx.loadJiggle = jiggleStep (ctx.loadJiggle);
@@ -523,7 +571,16 @@ function animate (ctx: Context, timestamp) {
 		ctx.refreshJiggle = jiggleStep (ctx.refreshJiggle);
 		ctx.textJiggle = jiggleStep (ctx.textJiggle);
 		
-		ctx.richText.text = ctx.display;
+		if (ctx.gameState == EGameState.WaitingToStart) {
+			ctx.startTimestamp = timestamp;
+			ctx.richText.text = "Make your guesser guess the words in one minute!";
+		}
+		else if (ctx.gameState == EGameState.Playing) {
+			ctx.richText.text = ctx.display;
+		}
+		else if (ctx.gameState == EGameState.Finished) {
+			ctx.richText.text = "Time's up!\nScore: " + ctx.numCorrect;
+		}
 		
 		// I should have floored the 255.0 * clause before multiplying it
 		// but this produces a crazy rainbow effect that I like.
@@ -546,7 +603,9 @@ function animate (ctx: Context, timestamp) {
 		ctx.refresh.rotation = -2.0 * Math.PI * refreshRotTween (ctx.refreshJiggle);
 		
 		ctx.clock.position = transform ({ x: 100.0, y: -150.0 });
-		ctx.clock.position.x += 8.0 * timeT * timeT * tickTockTween ((timeSeconds * 0.5) % 1.0);
+		if (ctx.gameState == EGameState.Playing) {
+			ctx.clock.position.x += 8.0 * timeT * timeT * tickTockTween ((timeSeconds * 0.5) % 1.0);
+		}
 		ctx.clock.position.y += loadY;
 		
 		ctx.clockHand.position = ctx.clock.position;
