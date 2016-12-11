@@ -131,6 +131,7 @@ class Context {
 	refreshJiggle: number;
 	loadJiggle: number;
 	basisJiggle: number;
+	textJiggle: number;
 	
 	sounds: Map <ESound, any>;
 	
@@ -145,6 +146,7 @@ class Context {
 		this.loadJiggle = 1.0;
 		this.checkmarkJiggleDirection = 0.0;
 		this.basisJiggle = 0.0;
+		this.textJiggle = 0.0;
 		
 		this.sounds = new Map ([
 			[ESound.Correct, new Howl ({
@@ -257,7 +259,7 @@ function load (PIXI) {
 		strokeThickness : 6,
 		dropShadow : false,
 		wordWrap : true,
-		wordWrapWidth : 256
+		wordWrapWidth : 240
 	};
 	
 	ctx.richText = new PIXI.Text('',ctx.style);
@@ -351,7 +353,6 @@ function onCheck (ctx: Context, eventData): void {
 	ctx.numCorrect += 1;
 	
 	ctx.sounds.get (ESound.Correct).play ();
-	//startAnimating (ctx);
 }
 
 function onRefresh (ctx: Context, eventData): void {
@@ -359,7 +360,7 @@ function onRefresh (ctx: Context, eventData): void {
 	ctx.refreshJiggle = 1.0;
 	
 	ctx.sounds.get (ESound.Refresh).play ();
-	//startAnimating (ctx);
+	ctx.textJiggle = 1.0;
 }
 
 function jiggleClamp (t: number): number {
@@ -521,7 +522,13 @@ function animate (ctx: Context, timestamp) {
 		ctx.loadJiggle = jiggleStep (ctx.loadJiggle);
 		ctx.checkmarkJiggle = jiggleStep (ctx.checkmarkJiggle);
 		ctx.refreshJiggle = jiggleStep (ctx.refreshJiggle);
+		ctx.textJiggle = jiggleStep (ctx.textJiggle);
+		
 		ctx.richText.text = ctx.display;
+		
+		// I should have floored the 255.0 * clause before multiplying it
+		// but this produces a crazy rainbow effect that I like.
+		ctx.richText.tint = 0x010101 * (255.0 * (1.0 - ctx.textJiggle));
 		
 		let loadT = loadTween (ctx.loadJiggle);
 		let checkT = checkTween (ctx.checkmarkJiggle);
