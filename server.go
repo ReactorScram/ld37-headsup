@@ -29,16 +29,13 @@ func main() {
 	}
 	
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm ();
+		stmt, _ := db.Prepare ("insert into Events (ip, timestamp, json) values (?, strftime ('%s', 'now'), ?);")
+		defer stmt.Close ()
 		
-		{
-			stmt, _ := db.Prepare ("insert into Events (ip, timestamp, json) values (?, strftime ('%s', 'now'), ?);")
-			defer stmt.Close ()
-			
-			body, _ := ioutil.ReadAll (r.Body);
-			
-			stmt.Exec (r.RemoteAddr, body);
-		}
+		body, _ := ioutil.ReadAll (r.Body);
+		
+		stmt.Exec (r.RemoteAddr, body);
+		
 		{
 			stmt, _ := db.Prepare ("select datetime ('now');")
 			defer stmt.Close ()
@@ -53,7 +50,7 @@ func main() {
 		
 		//fmt.Println (r.RemoteAddr);
 		
-		fmt.Fprintf (w, ":^)\r\n");
+		fmt.Fprintf (w, ":^)\r\n%v\r\n", len (body));
 	})
 	
 	db.Exec ("create table if not exists Events (ip string, timestamp int, json string);")

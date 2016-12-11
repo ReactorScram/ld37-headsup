@@ -417,7 +417,7 @@ function contextPickWord (ctx: Context): void {
 
 function sendAnalytics (ctx: Context, data: string) {
 	var r = new XMLHttpRequest();
-	r.open("POST", "analytics", true);
+	r.open("POST", "analytics/", true);
 	r.onload = function () {
 		ctx.scoreState = EScoreState.Sent;
 	}
