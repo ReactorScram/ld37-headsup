@@ -66,18 +66,25 @@ let Prns = (function () {
 	};
 })();
 
+interface Vec2 {
+	x: number;
+	y: number;
+}
+
 interface PixiView {
 	offsetWidth: number;
 	offsetHeight: number;
 }
 
-interface PixiStage {
+interface PixiContainer {
 	addChild (child: any): void;
+	position: Vec2;
+	rotation: number;
 }
 
 interface PixiRenderer {
 	view: any;
-	render (stage: PixiStage): void;
+	render (stage: PixiContainer): void;
 	resize (width: number, height: number): void;
 }
 
@@ -97,7 +104,7 @@ enum ESound {
 }
 
 class Context {
-	check: PixiSprite;
+	check: PixiContainer;
 	refresh: PixiSprite;
 	
 	clock: PixiSprite;
@@ -109,7 +116,7 @@ class Context {
 	display: string;
 	renderer: PixiRenderer;
 	richText: any;
-	stage: PixiStage;
+	stage: PixiContainer;
 	style: any;
 	wordList: Array <string>;
 	
@@ -198,7 +205,8 @@ function load (PIXI) {
 	check.on('mousedown', localCheck);
 	check.on('touchstart', localCheck);
 	
-	ctx.check = check;
+	ctx.check = new PIXI.Container ();
+	ctx.check.addChild (check);
 	
 	let refreshTex = PIXI.Texture.fromImage ("images/refresh.png");
 	let refresh = new PIXI.Sprite (refreshTex);
@@ -239,26 +247,25 @@ function load (PIXI) {
 	ctx.clockHand = clockHand;
 	
 	ctx.style = {
-		fontFamily : 'Arial',
+		align: "center",
+		fontFamily : 'Sans',
 		fontSize : '30px',
 		fontStyle : 'italic',
 		fontWeight : 'bold',
 		fill : '#F7EDCA',
-		stroke : '#4a1850',
-		strokeThickness : 5,
-		dropShadow : true,
-		dropShadowColor : '#000000',
-		dropShadowAngle : Math.PI / 6,
-		dropShadowDistance : 6,
+		stroke : '#277007',
+		strokeThickness : 6,
+		dropShadow : false,
 		wordWrap : true,
-		wordWrapWidth : 340
+		wordWrapWidth : 256
 	};
 	
 	ctx.richText = new PIXI.Text('',ctx.style);
-	ctx.richText.x = 10;
-	ctx.richText.y = 10;
+	ctx.richText.anchor = { x: 0.5, y: 0.5 };
 	
-	ctx.stage.addChild(ctx.richText);
+	ctx.check.addChild (ctx.richText);
+	
+	ctx.stage.addChild(ctx.check);
 	
 	ctx.basisJiggle = getTargetBasis (ctx.renderer.view);
 	
