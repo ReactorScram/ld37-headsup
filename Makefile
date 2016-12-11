@@ -1,9 +1,9 @@
-all: analytics.js prns.exe word-lists/ludumdare.json
+all: game.js prns.exe word-lists/ludumdare.json
 
 .PHONY: all
 
-analytics.js: analytics.ts
-	tsc --lib es6 analytics.ts
+game.js: game.ts
+	tsc --lib es6 game.ts
 
 prns.exe: prns.cpp prns.h
 	g++ -o $@ $<

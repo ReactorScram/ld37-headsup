@@ -12,7 +12,12 @@ declare class XMLHttpRequest {
 	open (verb: string, url: string, async: boolean): void;
 	send (idk: any): void;
 }
-
+/*
+declare interface IWindow {
+	location: any;
+}
+declare var Window: IWindow;
+*/
 let Prns = (function () {
 	let Long = dcodeIO.Long;
 	
@@ -109,6 +114,13 @@ enum EGameState {
 	WaitingToStart,
 	Playing,
 	Finished,
+	SendScore,
+}
+
+enum EScoreState {
+	NotSent,
+	Sending,
+	Sent,
 }
 
 class Context {
@@ -145,8 +157,13 @@ class Context {
 	
 	// Actual game logic
 	startTimestamp: number;
+	finishTimestamp: number;
+	lastTimestamp: number;
 	gameState: EGameState;
 	nextTick: number;
+	scoreState: EScoreState;
+	// This all gets sent to the server after you click Submit
+	eventLog: Array <Object>;
 	
 	constructor (public Pixi: any, public pseudoCookie: Long) {
 		this.clickCount = 0;
@@ -177,6 +194,20 @@ class Context {
 		this.startTimestamp = null;
 		this.gameState = EGameState.WaitingToStart;
 		this.nextTick = 0;
+		this.scoreState = EScoreState.NotSent;
+		this.eventLog = [];
+		this.logEvent ({ 
+			t: "booted",
+			pseudoCookie: pseudoCookie.getLowBitsUnsigned (),
+			url: document.location.toString ()
+		});
+	}
+	
+	logEvent (event: Object): void {
+		this.eventLog.push ({
+			time: this.lastTimestamp,
+			event: event
+		});
 	}
 }
 
@@ -203,6 +234,12 @@ function load (PIXI) {
 	
 	ctx.renderer = PIXI.autoDetectRenderer(1280, 720,{backgroundColor : 0x62c6cc});
 	document.body.appendChild(ctx.renderer.view);
+	
+	ctx.logEvent ({
+		t: "window_size",
+		width: ctx.renderer.view.offsetWidth,
+		height: ctx.renderer.view.offsetHeight
+	});
 	
 	// create the root of the scene graph
 	ctx.stage = new PIXI.Container();
@@ -371,10 +408,32 @@ function onCheck (ctx: Context, eventData): void {
 	if (ctx.gameState == EGameState.Finished) {
 		return;
 	}
+	else if (ctx.gameState == EGameState.SendScore) {
+		if (ctx.scoreState == EScoreState.NotSent) {
+			ctx.logEvent ("submit");
+			
+			var r = new XMLHttpRequest();
+			r.open("POST", "analytics", true);
+			r.onload = function () {
+				if (r.readyState === 4) {
+					ctx.scoreState = EScoreState.Sent;
+				}
+			}
+			r.send(ctx.eventLog);
+			
+			ctx.scoreState = EScoreState.Sending;
+		}
+		return;
+	}
 	
 	if (ctx.gameState == EGameState.Playing) {
 		ctx.numCorrect += 1;
 	}
+	
+	ctx.logEvent ({
+		t: "onCheck",
+		word: ctx.display
+	});
 	
 	contextPickWord (ctx);
 	ctx.checkmarkJiggle = 1.0;
@@ -387,6 +446,15 @@ function onRefresh (ctx: Context, eventData): void {
 	if (ctx.gameState == EGameState.Finished) {
 		return;
 	}
+	else if (ctx.gameState == EGameState.SendScore) {
+		document.location.reload (true);
+		return;
+	}
+	
+	ctx.logEvent ({
+		t: "onRefresh",
+		word: ctx.display
+	});
 	
 	contextPickWord (ctx);
 	ctx.refreshJiggle = 1.0;
@@ -503,6 +571,8 @@ function animate (ctx: Context, timestamp) {
 	
 	startAnimating (ctx);
 	
+	ctx.lastTimestamp = timestamp;
+	
 	let animRate: number = 1.0 / 30.0;
 	
 	function jiggleStep (t: number): number {
@@ -573,6 +643,7 @@ function animate (ctx: Context, timestamp) {
 		if (ctx.gameState == EGameState.Playing) {
 			ctx.sounds.get (ESound.Finished).play ();
 			ctx.gameState = EGameState.Finished;
+			ctx.logEvent ("finished");
 		}
 	}
 	else {
@@ -590,15 +661,34 @@ function animate (ctx: Context, timestamp) {
 		ctx.refreshJiggle = jiggleStep (ctx.refreshJiggle);
 		ctx.textJiggle = jiggleStep (ctx.textJiggle);
 		
+		function GetScoreText () {
+			return "Score: " + ctx.numCorrect;
+		}
+		
 		if (ctx.gameState == EGameState.WaitingToStart) {
 			ctx.startTimestamp = timestamp;
 			ctx.richText.text = "Make your guesser guess the words in one minute!";
 		}
 		else if (ctx.gameState == EGameState.Playing) {
 			ctx.richText.text = ctx.display;
+			ctx.finishTimestamp = timestamp;
 		}
 		else if (ctx.gameState == EGameState.Finished) {
-			ctx.richText.text = "Time's up!\nScore: " + ctx.numCorrect;
+			ctx.richText.text = "Time's up!\n" + GetScoreText ();
+			if (timestamp - ctx.finishTimestamp > 2000) {
+				ctx.gameState = EGameState.SendScore;
+			}
+		}
+		else if (ctx.gameState == EGameState.SendScore) {
+			if (ctx.scoreState == EScoreState.NotSent) {
+				ctx.richText.text = GetScoreText () + "\n<Submit>";
+			}
+			else if (ctx.scoreState == EScoreState.Sending) {
+				ctx.richText.text = GetScoreText () + "\nSubmitting...";
+			}
+			else if (ctx.scoreState == EScoreState.Sent) {
+				ctx.richText.text = GetScoreText () + "\nSubmitted";
+			}
 		}
 		
 		// I should have floored the 255.0 * clause before multiplying it

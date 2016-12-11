@@ -1,7 +1,8 @@
 *.exe
 *.min.js
 
-/analytics.js
-/images/*png
+/game.js
+/images
 /ld37-headsup
+/sounds
 /word-lists/*json

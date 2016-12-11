@@ -1,0 +1,19 @@
+.button {
+	background-color: #65cd09; /* Green */
+	border: 4px solid #277007;
+	color: #277007;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 20px;
+}
+body {
+	margin: 0;
+	background-color:#62c6cc;
+	max-width:1024px;
+}
+img {
+	display: block;  /* prevents scrollbar */
+	max-width:100%;
+}
