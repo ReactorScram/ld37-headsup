@@ -290,9 +290,16 @@ function load (PIXI) {
 	ctx.stage.addChild (ctx.check);
 	ctx.stage.addChild (ctx.refresh);
 	
+	let localClock = function (eventData) {
+		ctx.logEvent ("click_clocked");
+	}
+	
 	let clockTex = PIXI.Texture.fromImage ("images/clock.png");
 	let clock = new PIXI.Sprite (clockTex);
 	
+	clock.interactive = true;
+	clock.on ("mousedown", localClock);
+	clock.on ("touchstart", localClock);
 	clock.anchor.x = 0.5;
 	clock.anchor.y = 0.5;
 	ctx.stage.addChild (clock);
@@ -301,6 +308,9 @@ function load (PIXI) {
 	let clockHandTex = PIXI.Texture.fromImage ("images/clock-hand.png");
 	let clockHand = new PIXI.Sprite (clockHandTex);
 	
+	clockHand.interactive = true;
+	clockHand.on ("mousedown", localClock);
+	clockHand.on ("touchstart", localClock);
 	clockHand.anchor.x = 0.5;
 	clockHand.anchor.y = 0.5;
 	ctx.stage.addChild (clockHand);
