@@ -58,6 +58,10 @@ func main() {
 	
 	db.Exec ("create table if not exists Events (ip string, timestamp int, json string);")
 	
+	port := ":8081"
+	
+	fmt.Println ("Listening... ", port)
+	
 	// Start server
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	log.Fatal(http.ListenAndServe(port, nil))
 }
