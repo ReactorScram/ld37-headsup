@@ -1,4 +1,4 @@
-all: game.js prns.exe word-lists/ludumdare.json
+all: game.js prns.exe word-lists/ludumdare.json analytics.exe
 
 .PHONY: all
 
@@ -10,3 +10,6 @@ prns.exe: prns.cpp prns.h
 
 word-lists/ludumdare.json: word-lists/ludumdare.txt
 	lua lines-to-json.lua < $< > $@
+
+analytics.exe: server.go
+	go build -o $@ $<

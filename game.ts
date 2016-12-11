@@ -292,6 +292,7 @@ function load (PIXI) {
 	
 	let localClock = function (eventData) {
 		ctx.logEvent ("click_clocked");
+		//sendAnalytics (ctx, JSON.stringify (ctx.eventLog));
 	}
 	
 	let clockTex = PIXI.Texture.fromImage ("images/clock.png");
@@ -414,6 +415,15 @@ function contextPickWord (ctx: Context): void {
 	//console.log ("Used " + ctx.usedWordList.length + " words");
 }
 
+function sendAnalytics (ctx: Context, data: string) {
+	var r = new XMLHttpRequest();
+	r.open("POST", "analytics", true);
+	r.onload = function () {
+		ctx.scoreState = EScoreState.Sent;
+	}
+	r.send(data);
+}
+
 function onCheck (ctx: Context, eventData): void {
 	if (ctx.gameState == EGameState.Finished) {
 		return;
@@ -422,14 +432,7 @@ function onCheck (ctx: Context, eventData): void {
 		if (ctx.scoreState == EScoreState.NotSent) {
 			ctx.logEvent ("submit");
 			
-			var r = new XMLHttpRequest();
-			r.open("POST", "analytics", true);
-			r.onload = function () {
-				if (r.readyState === 4) {
-					ctx.scoreState = EScoreState.Sent;
-				}
-			}
-			r.send(ctx.eventLog);
+			sendAnalytics (ctx, JSON.stringify (ctx.eventLog));
 			
 			ctx.scoreState = EScoreState.Sending;
 		}
