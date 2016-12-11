@@ -23,3 +23,6 @@ local file access with file:///.
 
 So I should make a downloadable zip for that.
 
+Submitting the analytics fails, so I should handle that. Due to CORS
+it is probably impossible to make a local file send data to my website.
+
