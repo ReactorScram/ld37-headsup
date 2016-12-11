@@ -53,7 +53,7 @@ func main() {
 		
 		fmt.Println (r.RemoteAddr);
 		
-		fmt.Fprintf (w, ":^)");
+		fmt.Fprintf (w, ":^)\r\n");
 	})
 	
 	db.Exec ("create table if not exists Events (ip string, timestamp int, json string);")
