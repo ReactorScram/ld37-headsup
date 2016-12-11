@@ -1,5 +1,7 @@
 # ReactorScram Ludum Dare 37 - "Heads-Up"
 
+https://reactorscram.com/ld37/
+
 My goal this LD is to clone the popular "Heads-Up" game for phones.
 
 Heads-Up is charades on a phone. The screen shows a secret word or phrase. One or more players are "hint givers" who can see the screen and give hints to the "guesser". The "guesser" is the only player who cannot see the screen directly, and must deduce the secret phrase from the hints.
