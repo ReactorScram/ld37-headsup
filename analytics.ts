@@ -135,7 +135,7 @@ class Context {
 	
 	sounds: Map <ESound, any>;
 	
-	constructor (public Pixi: any, public pseudoCookie: number) {
+	constructor (public Pixi: any, public pseudoCookie: Long) {
 		this.clickCount = 0;
 		this.frames = 0;
 		this.display = "Loading...";
@@ -178,7 +178,7 @@ class dcodeIO {
 }
 
 function load (PIXI) {
-	let ctx = new Context (PIXI, Math.floor (Math.random () * 1024 * 1024 * 1024));
+	let ctx = new Context (PIXI, Prns.fromNum (Math.floor (Math.random () * 1024 * 1024 * 1024)));
 	
 	ctx.renderer = PIXI.autoDetectRenderer(1280, 720,{backgroundColor : 0x62c6cc});
 	document.body.appendChild(ctx.renderer.view);
@@ -252,7 +252,6 @@ function load (PIXI) {
 		align: "center",
 		fontFamily : 'Sans',
 		fontSize : '30px',
-		fontStyle : 'italic',
 		fontWeight : 'bold',
 		fill : '#F7EDCA',
 		stroke : '#277007',
@@ -342,7 +341,7 @@ function pickWord (wordList: Array <string>, usedWordList: Array <number>, rnd: 
 
 function contextPickWord (ctx: Context): void {
 	ctx.clickCount = ctx.clickCount + 1;
-	ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount)))];
+	ctx.display = ctx.wordList [pickWord (ctx.wordList, ctx.usedWordList, Prns.at (Prns.fromNum (ctx.clickCount).multiply (ctx.pseudoCookie)))];
 	//console.log ("Used " + ctx.usedWordList.length + " words");
 }
 

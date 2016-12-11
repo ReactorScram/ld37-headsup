@@ -171,7 +171,7 @@ PEBKAC
 Peer-to-peer
 Perlin Noise
 Phaser
-Physically&shy;Based Rendering
+Physically- Based Rendering
 Physics engine
 Pickup
 Pixel art
