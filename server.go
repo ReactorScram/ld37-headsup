@@ -44,7 +44,7 @@ func main() {
 			defer stmt.Close ()
 			
 			row := stmt.QueryRow ()
-			var timeString = 0
+			var timeString = ""
 			
 			row.Scan (&timeString)
 			
