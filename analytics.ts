@@ -372,10 +372,13 @@ function onCheck (ctx: Context, eventData): void {
 		return;
 	}
 	
+	if (ctx.gameState == EGameState.Playing) {
+		ctx.numCorrect += 1;
+	}
+	
 	contextPickWord (ctx);
 	ctx.checkmarkJiggle = 1.0;
 	ctx.checkmarkJiggleDirection = ctx.clickCount % 2.0 * 2.0 - 1.0;
-	ctx.numCorrect += 1;
 	
 	ctx.sounds.get (ESound.Correct).play ();
 }
@@ -453,6 +456,7 @@ function tickTween (t: number): number {
 	return smoothStep (t2);
 }
 
+// Note: Range is [-1.0, 1.0]
 function tickTockTween (t: number): number {
 	if (t < 0.5) {
 		return tickTween (t * 2.0);
@@ -460,6 +464,20 @@ function tickTockTween (t: number): number {
 	else {
 		return -tickTween (t * 2.0 - 1.0);
 	}
+}
+
+// Note: Domain and range are all reals
+// Snaps to integers
+function clockHandTween (t: number): number {
+	let integralPart = Math.floor (t);
+	let fractionalPart = t - integralPart;
+	
+	let t2 = 0.0;
+	if (fractionalPart > 0.75) {
+		t2 = smoothStep (fractionalPart * 4.0 - 3.0);
+	}
+	
+	return t2 + integralPart;
 }
 
 function getTargetBasis (view: any): number {
@@ -552,7 +570,6 @@ function animate (ctx: Context, timestamp) {
 	let timeT = (timeSeconds / totalTime);
 	
 	if (timeT > 1.0) {
-		timeT = 1.0;
 		if (ctx.gameState == EGameState.Playing) {
 			ctx.sounds.get (ESound.Finished).play ();
 			ctx.gameState = EGameState.Finished;
@@ -564,6 +581,8 @@ function animate (ctx: Context, timestamp) {
 			ctx.nextTick = Math.ceil (timeSeconds);
 		}
 	}
+	
+	let clockHandT = Math.min (1.0, clockHandTween (timeSeconds) / totalTime);
 	
 	if (isLoaded (ctx)) {
 		ctx.loadJiggle = jiggleStep (ctx.loadJiggle);
@@ -609,7 +628,7 @@ function animate (ctx: Context, timestamp) {
 		ctx.clock.position.y += loadY;
 		
 		ctx.clockHand.position = ctx.clock.position;
-		ctx.clockHand.rotation = timeT * 2.0 * Math.PI;
+		ctx.clockHand.rotation = clockHandT * 2.0 * Math.PI;
 	}
 	else {
 		ctx.richText.text = "Loading...";
