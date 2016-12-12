@@ -1,15 +1,20 @@
-# ReactorScram Ludum Dare 37 - "Heads-Up"
+# What's That Word
 
-https://reactorscram.com/ld37/
+2-Player hotseat co-op word-guessing game in HTML5.
 
-My goal this LD is to clone the popular "Heads-Up" game for phones.
+The Hinter player opens the website on their phone / computer and
+gives hints to the Guesser, who must guess the secret word based only
+on the hints (No screen-looking!)
 
-Heads-Up is charades on a phone. The screen shows a secret word or phrase. One or more players are "hint givers" who can see the screen and give hints to the "guesser". The "guesser" is the only player who cannot see the screen directly, and must deduce the secret phrase from the hints.
+Each round lasts one minute, after which the score is tallied up.
 
-I am planning to write it in JavaScript with Pixi.JS for graphics and an
-opt-in hook to send analytics data back to my server, which will be written in Go and write to a SQLite DB.
+![v1.0 screenshot](screenshots/Screenshot_20161210_223719.png)
 
-The whole license will be AGPLv3-licensed.
+The game has opt-in analytics - If you click "Submit" after a round,
+it will send an event log to a simple Golang server. By default nothing
+more than regular HTTP GET requests are sent.
 
-The official proprietary version has some novelty where it records video of the other players, but when I've played it nobody bothered to play the video back, so I am ignoring that feature for now.
+The game can run from local files, however the analytics will not be sent
+because of same-origin policy.
 
+The game and assets are copyleft under the AGPLv3.
